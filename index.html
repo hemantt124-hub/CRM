@@ -534,7 +534,34 @@ tr:hover td{background:var(--surface2);}
 /* ══════════════════════════════════════
    DATA
 ══════════════════════════════════════ */
-let EMAIL_CFG = JSON.parse(localStorage.getItem('fn_emailcfg') || 'null') || {serviceId:'',templateId:'',publicKey:'',configured:false};
+  // ← Add this at the TOP of your existing script
+  const API_BASE = 'https://backend-p6kw.onrender.com';
+
+  // Replace your login function with this:
+  async function handleLogin(username, password) {
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // Save token for future requests
+        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('user', JSON.stringify(data.data.user));
+        // Redirect to dashboard
+        showDashboard(data.data.user);
+      } else {
+        alert('Invalid username or password');
+      }
+    } catch (err) {
+      alert('Cannot connect to server. Please try again.');
+    }
+  }
+  let EMAIL_CFG = JSON.parse(localStorage.getItem('fn_emailcfg') || 'null') || {serviceId:'',templateId:'',publicKey:'',configured:false};
 
 const USERS_DB = {
   admin1:   {pass:'admin123',role:'admin',   name:'Rajan Mehta',    email:'',dept:'Administration',username:'admin1'},
